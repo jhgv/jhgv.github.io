@@ -33,10 +33,6 @@ d3.csv("http://localhost:8000/server/resources/college_data.csv", function(error
             return d;
         }).tickSizeInner([-height]));
 
-    // g.append("g")
-    //     .attr("class", "y axis")
-    //     .call(d3.axisLeft(y));
-
     g.selectAll(".bar")
         .data(data)
         .enter().append("rect")

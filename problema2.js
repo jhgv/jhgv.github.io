@@ -25,10 +25,11 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
   accessToken: 'pk.eyJ1IjoiamhndiIsImEiOiJjamd2aDE0MXcweGplMzJwZG9ucWc2YXEwIn0.BgPWURJ8_bM6SUFvRcFvKQ'
 }).addTo(map);
 
-function load(type) {
-  if (type == 'municipio-circle') {
 
-  }
+var filters = {
+  state : null,
+  admission_rate: null,
+
 }
 
 loadMapAndPlot();
@@ -98,6 +99,18 @@ function loadCircles(data) {
   
   loadStateDataAndPlot();
 
+}
+
+function loadCollegeData() {
+  clearMap();
+  d3.csv(US_COLLEGE_DATA, function(error, college_data) {
+    collegeData = college_data;
+    
+    collegeData = college_data.filter(function(d) {
+      return parseFloatOrFalse(d.ADM_RATE) == parseFloatOrFalse(filter.admission_rate);
+    });
+
+  });
 }
 
 function loadStateDataAndPlot(state) {
@@ -182,13 +195,31 @@ function getClassificationColor(occurenceClassification) {
  *
 */
 
-// function plotColoreStatesMap
-
 /*
  * 
  *   HELPER FUNCTIONS
  *
 */
+
+function clarMap() {
+  map.removeLayer(myCirlesLayerGroup);
+  myCirlesLayerGroup.clearLayers();
+  map.removeControl(legendLayer);
+}
+
+function getValueOrFalse(value) {
+  if(value != null && value != "" && value != "NULL" && value != "PrivacySuppressed") {
+    return value;
+  }
+  return false;
+}
+
+function parseFloatOrFalse (value) {
+  if(getValueOrFalse(value) != false && !isNaN(parseFloat(value))) {
+    return value;
+  }
+  return false;
+}
 
 
 function addSelectOptions(elementId, options) {
@@ -213,11 +244,4 @@ function clickEvent(e) {
   alert(college_data.NAME);
 }
 
-function chooseState(option) {
-  if(option.value == "ALL") {
-    loadMapAndPlot();
-  } else {
-    loadStates(null, option.value);
-  }
-  
-}
+

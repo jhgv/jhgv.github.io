@@ -6,11 +6,22 @@ var toggleSection = function(el, targetId) {
     }
 }
 
+var chooseState = function(option) {
+
+    clearMap();
+    filters.state = option.value;
+    loadCollegeData();
+    // if(option.value == "ALL") {
+    //   loadMapAndPlot();
+    // } else {
+    //   loadStates(null, option.value);
+    // }    
+}
+
 var setAdmissionRate = function() {
     var admissionRateEl = document.getElementById("admissionRateRange");
     var admissionRateValueEl = document.getElementById("admr");
     admissionRateValueEl.innerHTML = admissionRateEl.value + " %";
-
 
     var filteredCollegeData = collegeData.filter(function(d) {
         var admRate = parseFloat(d.ADM_RATE);
@@ -19,9 +30,7 @@ var setAdmissionRate = function() {
         return validValues && admRate <= admRateInputValue;
     });
 
-    map.removeLayer(myCirlesLayerGroup);
-    myCirlesLayerGroup.clearLayers();
-    map.removeControl(legendLayer);
+    clearMap();
 
     filteredCollegeData.forEach(function(d) {
         
