@@ -54,8 +54,6 @@ d3.csv("http://localhost:8000/server/resources/college_data.csv", function(error
         // .on("mouseout", function(d){ tooltip.style("display", "none");});
         ;
     
-    
-    console.log(data);
     var texts = gTexts.selectAll("text")
         .data(data)
         .enter().append("text");

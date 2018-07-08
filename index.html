@@ -40,18 +40,37 @@
               <div class="form-row">
                 <div class="col-md-12">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" onchange="toggleSection(this,'income-input')" step="1">
+                        <input class="form-check-input" type="checkbox" value="" onchange="toggleSection(this,'adm-rate-input')" step="1">
                         <label class="form-check-label" for="invalidCheck2" >
                           Admission rate
                         </label>
                       </div>
                 </div>
                 <!-- <div class="col-md-12 mb-3" id="income-input" style="display: none;"> -->
-                <div class="col-md-12 mb-3" id="income-input">
+                <div class="col-md-12 mb-3" id="adm-rate-input">
                   <label for="customRange1">Select the admission rate:<br/><span id="admr">50 %</span></label>
-                  <input type="range" class="custom-range" id="admissionRateRange" onchange="setAdmissionRate()" value="50">
+                  <input type="range" class="custom-range" id="admissionRateRange" onchange="setAdmissionRate()" oninput="setAdmissionRate()" value="50">
                 </div>
+                
               </div>
+
+              <div class="form-row">
+                  <div class="col-md-12">
+                      <div class="form-check">
+                          <input class="form-check-input" type="checkbox" value="" onchange="toggleSection(this,'f-income-input')">
+                          <label class="form-check-label" for="invalidCheck2" >
+                            Family income
+                          </label>
+                        </div>
+                  </div>
+                  <!-- <div class="col-md-12 mb-3" id="f-income" style="display: none;"> -->
+                  <div class="col-md-12 mb-3" id="if-income">
+                    <label for="familyIncomeRange">Select the family income:<br/><span id="f-income"></span></label>
+                    <input type="range" class="custom-range" id="familyIncomeRange" onchange="setFamilyIncome()" oninput="setFamilyIncome()" step="100.0">
+                  </div>
+                  
+                </div>
+
               <button class="btn btn-primary" type="submit">Submit</button>
             </form>
           </div>

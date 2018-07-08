@@ -1,6 +1,6 @@
 var US_CENTER_PROJECTION = [37.8, -96];
-var US_STATES_GEOJSON_DATA = "http://localhost:8000/server/resources/us_states_outline.geojson";
-var US_COLLEGE_DATA = "http://localhost:8000/server/resources/college_data.csv";
+var US_STATES_GEOJSON_DATA = "server/resources/us_states_outline.geojson";
+var US_COLLEGE_DATA = "server/resources/college_data.csv";
 
 var RED_COLOR = "#FF0000";
 var GREEN_COLOR = "#00FF00";
@@ -27,10 +27,9 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
 
 
 var filters = {
-  state : null,
-  admission_rate: null,
-
 }
+
+var inputsOk = false;
 
 loadMapAndPlot();
 
@@ -40,14 +39,6 @@ function geoDataDottedHandler(error, data) {
     return;
   }
   loadCircles(data);
-}
-
-function geoDataStateColorHandler(error, data) {
-  if (error) {
-    console.log(error);
-    return;
-  }
-  loadStates(data);
 }
 
 function loadMapLayer(geoJsonData) {
@@ -70,7 +61,7 @@ function updateFeature(updatedGeoJsonData) {
   myFeature.addData(updatedGeoJsonData); // Replace it by the new data.
 }
 
-function loadStates(data, state) {
+function loadStates(data) {
   
   map.removeLayer(myCirlesLayerGroup);
   myCirlesLayerGroup.clearLayers();
@@ -79,7 +70,7 @@ function loadStates(data, state) {
     loadMapLayer(data);
     return;
   }
-  loadStateDataAndPlot(state);
+  loadCollegeData();
   
 }
 
@@ -97,80 +88,78 @@ function loadCircles(data) {
       fillOpacity: 0
     });
   
-  loadStateDataAndPlot();
+  loadCollegeData();
 
 }
 
 function loadCollegeData() {
   clearMap();
   d3.csv(US_COLLEGE_DATA, function(error, college_data) {
-    collegeData = college_data;
-    
-    collegeData = college_data.filter(function(d) {
-      return parseFloatOrFalse(d.ADM_RATE) == parseFloatOrFalse(filter.admission_rate);
-    });
 
-  });
-}
+    // TODO: Remove after cleaning the csv file data
+    // college_data = college_data.filter(function(d) {
+    //   return !isNaN(parseFloat(d.ADM_RATE));
+    // });
 
-function loadStateDataAndPlot(state) {
-  d3.csv(US_COLLEGE_DATA, function(error, college_data) {
-
-    collegeData = college_data;
-
-    college_data = college_data.filter(function(d) {
-        return !isNaN(parseFloat(d.ADM_RATE));
-    });
-
-    var maxRate = d3.max(college_data, function(d) {
-      return +parseFloat(d.ADM_RATE) * 100;
-    });
-
-     var minRate = d3.min(college_data, function(d) {
-      return +parseFloat(d.ADM_RATE) * 100;
-    });
-
-    document.getElementById("admissionRateRange").max = maxRate;
-    document.getElementById("admissionRateRange").min = minRate;
-
-    occurencesByState = d3.nest()
+    if(!inputsOk) {
+      occurencesByState = d3.nest()
       .key(function(d) {
         return d.STATE;
       })
       .entries(college_data);
 
-    addSelectOptions("states", occurencesByState);
+      addSelectOptions("states", occurencesByState);
 
-    numColleges = 0;
-
-    
-
-    if(state) {
-      college_data.forEach(function(d) {
-        if(state == d.STATE && d.LATITUDE != "NULL" && d.LONGITUDE != "NULL") {
-          console.log(d.STATE);
-          L.circle([d.LATITUDE, d.LONGITUDE], {
-            color: "red",
-            fillColor: "red",
-            radius: 500,
-            data: d          
-          }).bringToFront().addTo(myCirlesLayerGroup).on("click", clickEvent);
-        }
+      var maxRate = d3.max(college_data, function(d) {
+        return +parseFloat(d.ADM_RATE) * 100;
       });
-    } else {
-      college_data.forEach(function(d) {
-        if(d.LATITUDE != "NULL" && d.LONGITUDE != "NULL") {
-          L.circle([d.LATITUDE, d.LONGITUDE], {
-            color: "red",
-            fillColor: "red",
-            radius: 500,
-            data: d          
-          }).bringToFront().addTo(myCirlesLayerGroup).on("click", clickEvent);
-        }
+      var minRate = d3.min(college_data, function(d) {
+        return +parseFloat(d.ADM_RATE) * 100;
       });
+      var avgRate = (maxRate + minRate) / 2;
+      document.getElementById("admissionRateRange").max = maxRate;
+      document.getElementById("admissionRateRange").min = minRate;
+      document.getElementById("admissionRateRange").value = avgRate;
+
+      var maxFamilyIncome = d3.max(college_data, function(d) {
+        return +parseFloat(d.AVG_FAM_INC);
+      });
+      var minFamilyIncome = d3.min(college_data, function(d) {
+        return +parseFloat(d.AVG_FAM_INC);
+      });
+
+      var avgFamilyIncome = (maxFamilyIncome + minFamilyIncome) / 2
+      document.getElementById("familyIncomeRange").max = maxFamilyIncome;
+      document.getElementById("familyIncomeRange").min = minFamilyIncome;
+      document.getElementById("familyIncomeRange").value = avgFamilyIncome;
+      inputsOk = true;
+
     }
+
+    var filteredCollegeData = filterCollegeData(college_data);
+
+    filteredCollegeData.forEach(function(d) {
+      if(d.LATITUDE != "NULL" && d.LONGITUDE != "NULL") {
+        L.circle([d.LATITUDE, d.LONGITUDE], {
+          color: "red",
+          fillColor: "red",
+          radius: 500,
+          data: d          
+        }).bringToFront()
+        .addTo(myCirlesLayerGroup)
+        .bindPopup(getPopupValue(d));
+      }
+    });
+
     map.addLayer(myCirlesLayerGroup);
-    d3.select("#collegeNumber").text(numColleges + " colleges plotted");
+    d3.select("#collegeNumber").text(filteredCollegeData.length + " colleges plotted");
+
+    // var collegeData = 
+    
+    // collegeData = college_data.filter(function(d) {
+    //   return parseFloatOrFalse(d.ADM_RATE) == parseFloatOrFalse(filters.admission_rate);
+    // });
+
   });
 }
 
@@ -201,7 +190,7 @@ function getClassificationColor(occurenceClassification) {
  *
 */
 
-function clarMap() {
+function clearMap() {
   map.removeLayer(myCirlesLayerGroup);
   myCirlesLayerGroup.clearLayers();
   map.removeControl(legendLayer);
@@ -230,6 +219,51 @@ function addSelectOptions(elementId, options) {
     option.text = e.key;
     document.getElementById(elementId).appendChild(option);
   });
+}
+
+function filterCollegeData(college_data) {
+  
+  var attributesToBeFiltered = Object.keys(filters);
+  var filteredCollegeData = [];
+  college_data.forEach(function(d){
+      var attrMatches = 0;
+      attributesToBeFiltered.forEach(function(attr){
+        if(attr == "ADM_RATE" || attr == "AVG_FAM_INC") {
+          if(filters[attr] >= parseFloat(d[attr])) {
+            attrMatches++;
+          }
+        } else {
+          if(filters[attr] == d[attr]) {
+            attrMatches++;
+          }
+        } 
+      });
+      if(attrMatches == attributesToBeFiltered.length) {
+        filteredCollegeData.push(d);
+      }
+  });
+
+  return filteredCollegeData;
+}
+
+function isValidValue(value) {
+  return value != null && value != "" && value != "NULL" && value != "PrivacySuppressed";
+}
+
+
+function getPopupValue(college) {
+  var value = "<b>";
+  value += college.NAME;
+  value += "</b><br>";
+  value += "Admission rate: " + (parseFloat(college.ADM_RATE) * 100 + "%<br>");
+  value += "Family income: $ " + numberWithCommas ((parseFloat(college.AVG_FAM_INC).toFixed(2))) + "<br>";
+  return value;
+}
+
+const numberWithCommas = (x) => {
+  var parts = x.toString().split(".");
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.join(".");
 }
 
 

@@ -8,14 +8,8 @@ var toggleSection = function(el, targetId) {
 
 var chooseState = function(option) {
 
-    clearMap();
-    filters.state = option.value;
+    filters["STATE"] =  option.value;
     loadCollegeData();
-    // if(option.value == "ALL") {
-    //   loadMapAndPlot();
-    // } else {
-    //   loadStates(null, option.value);
-    // }    
 }
 
 var setAdmissionRate = function() {
@@ -23,27 +17,24 @@ var setAdmissionRate = function() {
     var admissionRateValueEl = document.getElementById("admr");
     admissionRateValueEl.innerHTML = admissionRateEl.value + " %";
 
-    var filteredCollegeData = collegeData.filter(function(d) {
-        var admRate = parseFloat(d.ADM_RATE);
-        var admRateInputValue = parseFloat(admissionRateEl.value) / 100.0;
-        var validValues =  !isNaN(admRate) && !isNaN(admRateInputValue);
-        return validValues && admRate <= admRateInputValue;
-    });
+    var admRateInputValue = parseFloat(admissionRateEl.value) / 100.0;
 
-    clearMap();
+    if(!isNaN(admRateInputValue)){
+        filters["ADM_RATE"] = parseFloat(admissionRateEl.value) / 100.0;
+    }
+    loadCollegeData();
+}
 
-    filteredCollegeData.forEach(function(d) {
-        
-        if(d.LATITUDE != "NULL" && d.LONGITUDE != "NULL") {
-            L.circle([d.LATITUDE, d.LONGITUDE], {
-            color: "red",
-            fillColor: "red",
-            radius: 100,
-            data: d          
-            }).bringToFront().addTo(myCirlesLayerGroup).on("click", clickEvent);
-        }
-    });
+var setFamilyIncome = function() {
+    var familyIncomeRangeEl = document.getElementById("familyIncomeRange");
+    var familyIncomeValueEl = document.getElementById("f-income");
+    familyIncomeValueEl.innerHTML = "$ " + parseFloat(familyIncomeRangeEl.value).toFixed(2);
 
-    map.addLayer(myCirlesLayerGroup);
-    // console.log(filteredCollegeData);
+    var familyIncomeInputValue = parseFloat(familyIncomeRangeEl.value);
+
+    if(!isNaN(familyIncomeInputValue)){
+        filters["AVG_FAM_INC"] = parseFloat(familyIncomeInputValue);
+    }
+    loadCollegeData();
+
 }
