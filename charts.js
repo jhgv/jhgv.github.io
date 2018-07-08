@@ -14,7 +14,7 @@ var g = svg.append("g")
 var gTexts = svg.append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");    
 
-d3.csv("http://localhost:8000/server/resources/college_data.csv", function(error, college_data) {
+d3.csv(US_COLLEGE_DATA, function(error, college_data) {
     if (error) throw error;
     college_data = college_data.filter(function(d) {
         return !isNaN(parseFloat(d.ADM_RATE));
