@@ -25,6 +25,13 @@
       .text {
         font-size: 15px;
       }
+
+      .bar:hover {
+        cursor: pointer;
+        stroke-width:2;
+        stroke:rgb(31, 68, 155);
+      }
+
     </style>
 
   </head>
@@ -125,7 +132,7 @@
                 <h4>Charts for:</h4>
               </div>
               <div class="col-md-12">
-                  <select class="form-control" onchange="loadChart(this)" >
+                  <select class="form-control" onchange="loadChart(this)" id="chart">
                       <option value="ADM_RATE" selected>Admission rate</option>
                       <option value="AVG_FAM_INC">Family Income</option>
                       <option value="PRED_BLACK">Predominantly black</option>

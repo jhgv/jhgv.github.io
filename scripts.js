@@ -9,12 +9,25 @@ var toggleSection = function(el, targetId, filterRelated) {
 }
 
 var resetFilters = function() {
+    var checkboxes = document.getElementsByTagName("input");
+    for(var i = 0 ; i < checkboxes.length; i++) {
+        if(checkboxes[i].type == "checkbox"){
+            checkboxes[i].checked = false;
+        }
+    }
+    document.getElementById("adm-rate-input").style.display = "none";
+    document.getElementById("f-income-input").style.display = "none";
+    document.getElementById("states").value = "ALL";
     filters = {};
     loadCollegeData();
 }
 
 var chooseState = function(option) {
     filters["STATE"] =  option.value;
+    console.log(filters["STATE"]);
+    if(filters["STATE"] == "ALL") {
+        delete filters["STATE"];
+    }
     loadCollegeData();
 }
 

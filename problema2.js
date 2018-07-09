@@ -18,6 +18,8 @@ var occurencesByState = null;
 
 var collegeData = [];
 
+var collegeCircles = [];
+
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
   attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
   maxZoom: 18,
@@ -137,6 +139,7 @@ function loadCollegeData() {
 
     filteredCollegeData.forEach(function(d) {
       if(d.LATITUDE != "NULL" && d.LONGITUDE != "NULL") {
+        collegeCircles.push(
         L.circle([d.LATITUDE, d.LONGITUDE], {
           color: "red",
           fillColor: "red",
@@ -144,12 +147,18 @@ function loadCollegeData() {
           data: d          
         }).bringToFront()
         .addTo(myCirlesLayerGroup)
-        .bindPopup(getPopupValue(d));
+        .bindPopup(getPopupValue(d)));
       }
     });
 
-    loadAdmissionRateChart(false);
-    loadAdmissionRateChart(true);
+    if(document.getElementById("chart").value == "ADM_RATE") {
+      loadAdmissionRateChart(false);
+      loadAdmissionRateChart(true);
+    } else if(document.getElementById("chart").value == "AVG_FAM_INC"){
+      loadFamilyIncomeChart(false);
+      loadFamilyIncomeChart(true);
+    }
+    
     // loadAdmissionRateChart(false);
 
     map.addLayer(myCirlesLayerGroup);

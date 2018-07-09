@@ -75,15 +75,19 @@ function loadAdmissionRateChart(desc) {
     var rects ;
 
     if(desc) {
-        rects = gTop.selectAll(".bar")
-            .remove()
-            .exit()
-            .data(data);
+        rects = gTop.selectAll(".bar").data(data);
+        
+        rects.exit()
+            .transition()
+            .duration(300)
+            .remove();
     } else {
-        rects = g.selectAll(".bar")
-            .remove()
-            .exit()
-            .data(data);
+        rects = g.selectAll(".bar").data(data);
+
+        rects.exit()
+            .transition()
+            .duration(300)
+            .remove();
     }
 
     rects
@@ -91,13 +95,14 @@ function loadAdmissionRateChart(desc) {
         .append("rect")
         .merge(rects)
         .attr("class", "bar")
-        .attr("x", 0)
+        .attr("x", 1)
         .attr("height", y.bandwidth())
         .attr("fill", "#38B0DE")
         .attr("y", function(d) { return y(d.NAME); })
         .attr("width", function(d) {
             return x(parseFloat(d.ADM_RATE));
-        });
+        })
+        .on("click",clickRect);
     
     var texts;
 
@@ -165,15 +170,19 @@ function loadFamilyIncomeChart(desc) {
     var rects ;
 
     if(desc) {
-        rects = gTop.selectAll(".bar")
-            .remove()
-            .exit()
-            .data(data);
+        rects = gTop.selectAll(".bar").data(data);
+        
+        rects.exit()
+            .transition()
+            .duration(300)
+            .remove();
     } else {
-        rects = g.selectAll(".bar")
-            .remove()
-            .exit()
-            .data(data);
+        rects = g.selectAll(".bar").data(data);
+
+        rects.exit()
+            .transition()
+            .duration(300)
+            .remove();
     }
 
     rects
@@ -181,13 +190,14 @@ function loadFamilyIncomeChart(desc) {
         .append("rect")
         .merge(rects)
         .attr("class", "bar")
-        .attr("x", 0)
+        .attr("x", 1)
         .attr("height", y.bandwidth())
         .attr("fill", "#38B0DE")
         .attr("y", function(d) { return y(d.NAME); })
         .attr("width", function(d) {
             return x(parseFloat(d.AVG_FAM_INC));
-        });
+        })
+        .on("click",clickRect);
     
     var texts;
 
@@ -285,4 +295,23 @@ function updateTopAxis() {
     gTop.select(".y")
         .transition(t)
         .call(yAxisCall)
+}
+
+function clickRect(el, index) {
+    var self = d3.select(this);
+    var college = self.data()[0];
+    var collegeCircle = findCollegeCircle(college);
+    if (collegeCircle) {
+        collegeCircle.openPopup();
+    }
+}
+
+function findCollegeCircle(college) {
+    var collegeCircle = null;
+    collegeCircles.forEach(function(e){
+        if(e.options.data.NAME == college.NAME) {
+            collegeCircle =  e;
+        }
+    });
+    return collegeCircle;
 }
