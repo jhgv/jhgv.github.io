@@ -1,13 +1,19 @@
-var toggleSection = function(el, targetId) {
+var toggleSection = function(el, targetId, filterRelated) {
     if(el.checked) {
         document.getElementById(targetId).style.display = "block";
     } else {
+        delete filters[filterRelated];
         document.getElementById(targetId).style.display = "none";
     }
+    loadCollegeData();
+}
+
+var resetFilters = function() {
+    filters = {};
+    loadCollegeData();
 }
 
 var chooseState = function(option) {
-
     filters["STATE"] =  option.value;
     loadCollegeData();
 }
@@ -28,7 +34,7 @@ var setAdmissionRate = function() {
 var setFamilyIncome = function() {
     var familyIncomeRangeEl = document.getElementById("familyIncomeRange");
     var familyIncomeValueEl = document.getElementById("f-income");
-    familyIncomeValueEl.innerHTML = "$ " + parseFloat(familyIncomeRangeEl.value).toFixed(2);
+    familyIncomeValueEl.innerHTML = "$ " + numberWithCommas(parseFloat(familyIncomeRangeEl.value).toFixed(2));
 
     var familyIncomeInputValue = parseFloat(familyIncomeRangeEl.value);
 
@@ -37,4 +43,44 @@ var setFamilyIncome = function() {
     }
     loadCollegeData();
 
+}
+
+var setWomenOnly = function(el) {
+    if(el.checked) {
+        filters["WOMEN_ONLY"] = 1;
+    } else {
+        delete filters["WOMEN_ONLY"];
+    }
+    
+    loadCollegeData();
+}
+
+var setMenOnly = function(el) {
+    if(el.checked) {
+        filters["MEN_ONLY"] = 1;
+    } else {
+        delete filters["MEN_ONLY"];
+    }
+    
+    loadCollegeData();
+}
+
+var setPredominantlyBlack = function(el) {
+    if(el.checked) {
+        filters["PRED_BLACK"] = 1;
+    } else {
+        delete filters["PRED_BLACK"];
+    }
+    loadCollegeData();
+}
+
+var loadChart = function(el) {
+    if(el.value == "AVG_FAM_INC") {
+        loadFamilyIncomeChart(false);
+        loadFamilyIncomeChart(true);
+    } else if(el.value == "ADM_RATE") {
+        loadAdmissionRateChart(false);
+        loadAdmissionRateChart(true);
+    }
+    
 }

@@ -21,6 +21,10 @@
           margin-right: 8px;
           opacity: 0.7;
       }
+
+      .text {
+        font-size: 15px;
+      }
     </style>
 
   </head>
@@ -40,38 +44,68 @@
               <div class="form-row">
                 <div class="col-md-12">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" onchange="toggleSection(this,'adm-rate-input')" step="1">
+                        <input class="form-check-input" type="checkbox" value="" onchange="toggleSection(this,'adm-rate-input', 'ADM_RATE')" step="1">
                         <label class="form-check-label" for="invalidCheck2" >
                           Admission rate
                         </label>
                       </div>
                 </div>
-                <!-- <div class="col-md-12 mb-3" id="income-input" style="display: none;"> -->
-                <div class="col-md-12 mb-3" id="adm-rate-input">
+                <div class="col-md-12 mb-3" id="adm-rate-input" style="display: none;">
                   <label for="customRange1">Select the admission rate:<br/><span id="admr">50 %</span></label>
-                  <input type="range" class="custom-range" id="admissionRateRange" onchange="setAdmissionRate()" oninput="setAdmissionRate()" value="50">
+                  <input type="range" class="custom-range" id="admissionRateRange" onchange="setAdmissionRate()" oninput="setAdmissionRate()">
                 </div>
                 
               </div>
 
               <div class="form-row">
-                  <div class="col-md-12">
-                      <div class="form-check">
-                          <input class="form-check-input" type="checkbox" value="" onchange="toggleSection(this,'f-income-input')">
-                          <label class="form-check-label" for="invalidCheck2" >
-                            Family income
-                          </label>
-                        </div>
-                  </div>
-                  <!-- <div class="col-md-12 mb-3" id="f-income" style="display: none;"> -->
-                  <div class="col-md-12 mb-3" id="if-income">
-                    <label for="familyIncomeRange">Select the family income:<br/><span id="f-income"></span></label>
-                    <input type="range" class="custom-range" id="familyIncomeRange" onchange="setFamilyIncome()" oninput="setFamilyIncome()" step="100.0">
-                  </div>
-                  
+                <div class="col-md-12">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" onchange="toggleSection(this,'f-income-input', 'AVG_FAM_INC')">
+                      <label class="form-check-label" for="invalidCheck2" >
+                        Family income
+                      </label>
+                    </div>
+                </div>
+                <div class="col-md-12 mb-3" id="f-income-input" style="display: none;">
+                  <label for="familyIncomeRange">Select the family income:<br/><span id="f-income"></span></label>
+                  <input type="range" class="custom-range" id="familyIncomeRange" onchange="setFamilyIncome()" oninput="setFamilyIncome()" step="100.0">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="col-md-12">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" onchange="setWomenOnly(this)" id="womenOnlyInput">
+                        <label class="form-check-label" for="invalidCheck2" >
+                          Women only
+                        </label>
+                      </div>
                 </div>
 
-              <button class="btn btn-primary" type="submit">Submit</button>
+                <div class="col-md-12">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" onchange="setMenOnly(this)" id="menOnlyInput" >
+                        <label class="form-check-label" for="invalidCheck2" >
+                          Men only
+                        </label>
+                      </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" onchange="setPredominantlyBlack(this)" id="predominantlyBlack" >
+                        <label class="form-check-label" for="invalidCheck2" >
+                          Predominantly Black
+                        </label>
+                      </div>
+                </div>
+                
+              </div>
+
+
+
+              <button type="button" class="btn btn-link mt-5" onclick="resetFilters()">Reset all</button>
+
             </form>
           </div>
           <div class="col-md-6">
@@ -88,14 +122,27 @@
           <div class="col-md-4">
             <div class="row">
               <div class="col-md-12">
-                  <select class="form-control" >
-                      <option value="ALL" selected>All</option>
+                <h4>Charts for:</h4>
+              </div>
+              <div class="col-md-12">
+                  <select class="form-control" onchange="loadChart(this)" >
+                      <option value="ADM_RATE" selected>Admission rate</option>
+                      <option value="AVG_FAM_INC">Family Income</option>
+                      <option value="PRED_BLACK">Predominantly black</option>
                     </select>
               </div>
             </div>
-            <div class="row">
+            <div class="row mt-3">
                 <div class="col-md-12">
-                 <svg id="hist" width="450" height="400"></svg>
+                  <h5>bottom 10</h5>
+                 <svg id="bottomChart" width="450" height="250"></svg>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-12">
+                  <h5>Top 10</h5>
+                 <svg id="topChart" width="450" height="250"></svg>
                 </div>
             </div>
           </div>

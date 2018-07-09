@@ -116,10 +116,8 @@ function loadCollegeData() {
       var minRate = d3.min(college_data, function(d) {
         return +parseFloat(d.ADM_RATE) * 100;
       });
-      var avgRate = (maxRate + minRate) / 2;
       document.getElementById("admissionRateRange").max = maxRate;
       document.getElementById("admissionRateRange").min = minRate;
-      document.getElementById("admissionRateRange").value = avgRate;
 
       var maxFamilyIncome = d3.max(college_data, function(d) {
         return +parseFloat(d.AVG_FAM_INC);
@@ -128,15 +126,14 @@ function loadCollegeData() {
         return +parseFloat(d.AVG_FAM_INC);
       });
 
-      var avgFamilyIncome = (maxFamilyIncome + minFamilyIncome) / 2
       document.getElementById("familyIncomeRange").max = maxFamilyIncome;
       document.getElementById("familyIncomeRange").min = minFamilyIncome;
-      document.getElementById("familyIncomeRange").value = avgFamilyIncome;
       inputsOk = true;
 
     }
 
     var filteredCollegeData = filterCollegeData(college_data);
+    collegeData = filteredCollegeData.slice();
 
     filteredCollegeData.forEach(function(d) {
       if(d.LATITUDE != "NULL" && d.LONGITUDE != "NULL") {
@@ -150,6 +147,10 @@ function loadCollegeData() {
         .bindPopup(getPopupValue(d));
       }
     });
+
+    loadAdmissionRateChart(false);
+    loadAdmissionRateChart(true);
+    // loadAdmissionRateChart(false);
 
     map.addLayer(myCirlesLayerGroup);
     d3.select("#collegeNumber").text(filteredCollegeData.length + " colleges plotted");
@@ -255,8 +256,12 @@ function getPopupValue(college) {
   var value = "<b>";
   value += college.NAME;
   value += "</b><br>";
-  value += "Admission rate: " + (parseFloat(college.ADM_RATE) * 100 + "%<br>");
+  value += "City: " + college.CITY + "<br>";
+  value += "Admission rate: " + (parseFloat(college.ADM_RATE) * 100) + "%<br>";
   value += "Family income: $ " + numberWithCommas ((parseFloat(college.AVG_FAM_INC).toFixed(2))) + "<br>";
+  value += "Women only: " + (college.WOMEN_ONLY == "1" ? "Yes":"No") + "<br>";
+  value += "Men only: " + (college.MEN_ONLY == "1" ? "Yes":"No") + "<br>";
+  value += "Pred. black: " + (college.PRED_BLACK == "1" ? "Yes":"No") + "<br>";
   return value;
 }
 
