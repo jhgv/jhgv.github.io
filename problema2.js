@@ -254,7 +254,7 @@ function filterCollegeData(college_data) {
       attributesToBeFiltered.forEach(function(attr){
         if(attr == "ADM_RATE" || attr == "AVG_FAM_INC" || attr == "AVG_COMPL_RATE"
             || attr == "PERC_DEG_INFO" || attr == "PERC_DEG_BUS" || attr == "PERC_DEG_MIL") {
-          if(filters[attr] >= parseFloat(d[attr]) && parseFloat(d[attr]) > 0) {
+          if(filters[attr] <= parseFloat(d[attr]) && parseFloat(d[attr]) > 0) {
             attrMatches++;
           }
         } else {
