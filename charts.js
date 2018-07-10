@@ -144,8 +144,7 @@ function loadFamilyIncomeChart(desc) {
     } else {
         college_data.sort(function(a, b){
             return  parseFloat(b.AVG_FAM_INC) - parseFloat(a.AVG_FAM_INC);
-        });
-        
+        }); 
     }
 
     var data = college_data.slice(0,10);
@@ -225,6 +224,99 @@ function loadFamilyIncomeChart(desc) {
         .attr("x",10); 
 }
 
+function loadCompletionRateChart(desc) {
+
+    var college_data = collegeData.filter(function(d) {
+        return !isNaN(parseFloat(d.AVG_COMPL_RATE)) && parseFloat(d.AVG_COMPL_RATE) > 0;
+    });
+
+    if(!desc) {
+        college_data.sort(function(a, b){
+            return  parseFloat(a.AVG_COMPL_RATE) - parseFloat(b.AVG_COMPL_RATE);
+        });
+        data = college_data.slice(0,10);
+    } else {
+        college_data.sort(function(a, b){
+            return  parseFloat(b.AVG_COMPL_RATE) - parseFloat(a.AVG_COMPL_RATE);
+        }); 
+    }
+
+    var data = college_data.slice(0,10);
+
+    setCompletionScale(data);
+
+    if(desc) {
+        if(!topAxisPloted) {
+            initTopAxis();
+        }else {
+            updateTopAxis();
+        }
+    } else {
+        if(!bottomAxisPloted){
+            initBottomAxis();
+        } else {
+            updateBottomAxis();
+        }
+    }
+
+    var rects ;
+
+    if(desc) {
+        rects = gTop.selectAll(".bar").data(data);
+        
+        rects.exit()
+            .transition()
+            .duration(300)
+            .remove();
+    } else {
+        rects = g.selectAll(".bar").data(data);
+
+        rects.exit()
+            .transition()
+            .duration(300)
+            .remove();
+    }
+
+    rects
+        .enter()
+        .append("rect")
+        .merge(rects)
+        .attr("class", "bar")
+        .attr("x", 1)
+        .attr("height", y.bandwidth())
+        .attr("fill", "#38B0DE")
+        .attr("y", function(d) { return y(d.NAME); })
+        .attr("width", function(d) {
+            return x(parseFloat(d.AVG_COMPL_RATE));
+        })
+        .on("click",clickRect);
+    
+    var texts;
+
+    if(desc) {
+        texts = gTopTexts.selectAll(".text")
+            .remove()
+            .exit()
+            .data(data);
+    } else {
+        texts = gTexts.selectAll(".text")
+            .remove()
+            .exit()
+            .data(data);
+    }
+        
+    texts
+        .enter()
+        .append("text")
+        .merge(texts)
+        .attr("class", "text")
+        .text(function(d) {return d.NAME})
+        .attr("y", function(d) {
+            return y(d.NAME) + 15;
+        })
+        .attr("x",10); 
+}
+
 function initBottomAxis() {
     bottomAxisPloted = true;
     // add the x Axis
@@ -264,6 +356,13 @@ function setAdmRateScale(data) {
 
 function setFamIncomeScale(data) {
     x.domain([0, d3.max(data, function(d){ return d.AVG_FAM_INC; })])
+    y.domain(data.map(function(d) { return d.NAME; }));
+    xAxisCall.scale(x);
+    yAxisCall.scale(y);
+}
+
+function setCompletionScale(data) {
+    x.domain([0, d3.max(data, function(d){ return d.AVG_COMPL_RATE; })])
     y.domain(data.map(function(d) { return d.NAME; }));
     xAxisCall.scale(x);
     yAxisCall.scale(y);

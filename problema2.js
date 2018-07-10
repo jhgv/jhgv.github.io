@@ -168,6 +168,9 @@ function loadCollegeData() {
     } else if(document.getElementById("chart").value == "AVG_FAM_INC"){
       loadFamilyIncomeChart(false);
       loadFamilyIncomeChart(true);
+    } else if(document.getElementById("chart").value == "AVG_COMPL_RATE") {
+      loadCompletionRateChart(false);
+      loadCompletionRateChart(true);
     }
     
     // loadAdmissionRateChart(false);

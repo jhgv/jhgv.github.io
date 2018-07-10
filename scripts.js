@@ -132,6 +132,9 @@ var loadChart = function(el) {
     } else if(el.value == "ADM_RATE") {
         loadAdmissionRateChart(false);
         loadAdmissionRateChart(true);
+    } else if(el.value == "AVG_COMPL_RATE") {
+        loadCompletionRateChart(false);
+        loadCompletionRateChart(true);
     }
     
 }
