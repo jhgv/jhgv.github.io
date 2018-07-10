@@ -2,7 +2,14 @@ var toggleSection = function(el, targetId, filterRelated) {
     if(el.checked) {
         document.getElementById(targetId).style.display = "block";
     } else {
-        delete filters[filterRelated];
+        if(filterRelated == "PERC_DEG_") {
+            delete filters[filterRelated + "INFO"];
+            delete filters[filterRelated + "MIL"];
+            delete filters[filterRelated + "BUS"];
+        }else {
+            delete filters[filterRelated];
+        }
+        
         document.getElementById(targetId).style.display = "none";
     }
     loadCollegeData();
@@ -85,6 +92,37 @@ var setPredominantlyBlack = function(el) {
         delete filters["PRED_BLACK"];
     }
     loadCollegeData();
+}
+
+var setCompletionRate = function(el) {
+    var completionRateEl = document.getElementById("completionRange");
+    var completionRateValueEl = document.getElementById("f-completion");
+    completionRateValueEl.innerHTML = completionRateEl.value + " %";
+
+    var admRateInputValue = parseFloat(completionRateEl.value) / 100.0;
+
+    if(!isNaN(admRateInputValue)){
+        filters["AVG_COMPL_RATE"] = parseFloat(completionRateEl.value) / 100.0;
+    }
+    loadCollegeData();
+}
+
+var setDegreesAwarded = function(el){
+    var degreeSelectEl = document.getElementById("degree");
+    var degreeRateRangeEl = document.getElementById("f-degrees");
+    degreeRateRangeEl.innerHTML = el.value + " %";   
+
+    var percDegreeAwardedForCourse = parseFloat(el.value) / 100.0;
+
+    delete filters["PERC_DEG_INFO"];
+    delete filters["PERC_DEG_BUS"];
+    delete filters["PERC_DEG_MIL"];
+
+    if(!isNaN(percDegreeAwardedForCourse)){
+        filters[degreeSelectEl.value] =  percDegreeAwardedForCourse;
+    }
+    loadCollegeData();
+
 }
 
 var loadChart = function(el) {

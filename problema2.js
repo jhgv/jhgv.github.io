@@ -130,6 +130,17 @@ function loadCollegeData() {
 
       document.getElementById("familyIncomeRange").max = maxFamilyIncome;
       document.getElementById("familyIncomeRange").min = minFamilyIncome;
+
+
+      var maxCompletionRate = d3.max(college_data, function(d) {
+        return +parseFloat(d.AVG_COMPL_RATE) * 100;;
+      });
+      var minCompletionRate = d3.min(college_data, function(d) {
+        return +parseFloat(d.AVG_COMPL_RATE) * 100;;
+      });
+
+      document.getElementById("completionRange").max = maxCompletionRate;
+      document.getElementById("completionRange").min = minCompletionRate;
       inputsOk = true;
 
     }
@@ -238,8 +249,9 @@ function filterCollegeData(college_data) {
   college_data.forEach(function(d){
       var attrMatches = 0;
       attributesToBeFiltered.forEach(function(attr){
-        if(attr == "ADM_RATE" || attr == "AVG_FAM_INC") {
-          if(filters[attr] >= parseFloat(d[attr])) {
+        if(attr == "ADM_RATE" || attr == "AVG_FAM_INC" || attr == "AVG_COMPL_RATE"
+            || attr == "PERC_DEG_INFO" || attr == "PERC_DEG_BUS" || attr == "PERC_DEG_MIL") {
+          if(filters[attr] >= parseFloat(d[attr]) && parseFloat(d[attr]) > 0) {
             attrMatches++;
           }
         } else {
@@ -266,11 +278,18 @@ function getPopupValue(college) {
   value += college.NAME;
   value += "</b><br>";
   value += "City: " + college.CITY + "<br>";
-  value += "Admission rate: " + (parseFloat(college.ADM_RATE) * 100) + "%<br>";
+  value += "Admission rate: " + (parseFloat(college.ADM_RATE) * 100).toFixed(2) + "%<br>";
   value += "Family income: $ " + numberWithCommas ((parseFloat(college.AVG_FAM_INC).toFixed(2))) + "<br>";
   value += "Women only: " + (college.WOMEN_ONLY == "1" ? "Yes":"No") + "<br>";
   value += "Men only: " + (college.MEN_ONLY == "1" ? "Yes":"No") + "<br>";
   value += "Pred. black: " + (college.PRED_BLACK == "1" ? "Yes":"No") + "<br>";
+  value += "Completion rate: " + (parseFloat(college.AVG_COMPL_RATE) * 100).toFixed(2) + "%<br>";
+  value += "Percentage of degrees awarded:";
+  value += "<ul>";
+  value += "<li>Computer and Information: " + (parseFloat(college.PERC_DEG_INFO) * 100).toFixed(2)  + "%</li>";
+  value += "<li>Business, Management, Marketing: " + (parseFloat(college.PERC_DEG_BUS) * 100).toFixed(2)  + "%</li>";
+  value += "<li>Military Technologies and Applied Science: " + (parseFloat(college.PERC_DEG_MIL) * 100).toFixed(2)  + "%</li>";
+  value += "</ul>";
   return value;
 }
 
